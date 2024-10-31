@@ -255,7 +255,11 @@ client = Socrata("publicreporting.cftc.gov", MyAppToken)
 cot_data = get_last_two_reports(client)
 st.set_page_config(layout="wide")
 # st.title("CoTrends")
-st.image("./assets/logo.png",width = 350)
+cl = st.columns(2)
+with cl[0]:
+    st.image("./assets/logo.png",width = 350)
+with cl[1]:
+    st.image("./assets/logo.png",width = 350)
 col1, col2 = st.columns(2)
 
 with col1:
