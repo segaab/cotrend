@@ -1,0 +1,6 @@
+sodapy
+python-dotenv
+google-cloud-firestore
+google-auth
+firebase_admin
+pandas
