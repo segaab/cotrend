@@ -259,7 +259,7 @@ cl = st.columns(2)
 with cl[0]:
     st.image("./assets/logo.png",width = 350)
 with cl[1]:
-    st.image("./assets/logo.png",width = 350)
+    st.image("./assets/banner.png",width = 350)
 col1, col2 = st.columns(2)
 
 with col1:
