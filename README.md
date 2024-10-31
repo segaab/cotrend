@@ -1,0 +1,1 @@
+# cotrend_app
