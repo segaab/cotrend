@@ -244,8 +244,10 @@ def analyze_positions(cot_data):
 
 # Asset list by catagories
 commodities = ["GOLD - COMMODITY EXCHANGE INC.","SILVER - COMMODITY EXCHANGE INC.","WTI FINANCIAL CRUDE OIL - NEW YORK MERCANTILE EXCHANGE"]
+commodities_names = ["Gold","Silver","WTI Crude Oil"]
 forex = ["JAPANESE YEN - CHICAGO MERCANTILE EXCHANGE", "AUSTRALIAN DOLLAR - CHICAGO MERCANTILE EXCHANGE","CANADIAN DOLLAR - CHICAGO MERCANTILE EXCHANGE","BRITISH POUND - CHICAGO MERCANTILE EXCHANGE", "EURO FX - CHICAGO MERCANTILE EXCHANGE","USD INDEX - ICE FUTURES U.S.", "NZ DOLLAR - CHICAGO MERCANTILE EXCHANGE","SWISS FRANC - CHICAGO MERCANTILE EXCHANGE"]
-indicies = ["DOW JONES U.S. REAL ESTATE IDX - CHICAGO BOARD OF TRADE", "E-MINI S&P 500 - CHICAGO MERCANTILE EXCHANGE", "MICRO E-MINI NASDAQ-100 INDEX - CHICAGO MERCANTILE EXCHANGE", "NIKKEI STOCK AVERAGE YEN DENOM - CHICAGO MERCANTILE EXCHANGE"]
+forex_names = ["JPY", "AUD","CAD","GBP", "EUR","DXY", "NZD","CHF"]
+indicies = ["DOW JONES", "S&P 500", "NQ-100","NIKKEI"]
 
 # Initialize Socrata client (update your credentials securely)
 MyAppToken = os.getenv('SODAPY_TOKEN')
@@ -264,9 +266,9 @@ col1, col2 = st.columns(2)
 
 with col1:
     st.header("Forex")
-    for asset in forex:
+    for cot,asset in forex,forex_names:
         with st.expander(asset):
-            asset_data = aggregate_report_data(cot_data, asset)
+            asset_data = aggregate_report_data(cot_data, cot)
             analytics_df = analyze_change(asset_data)
             # Prepare data for stacked bar chart
             chart_data = analyze_positions(analytics_df)
