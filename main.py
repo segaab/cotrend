@@ -1,4 +1,5 @@
 import os
+import json
 import streamlit as st
 import pandas as pd
 import firebase_admin
@@ -106,7 +107,7 @@ def asset_name_filter(data, asset_name=None):
     #     filtered_df['market_and_exchange_names'] = asset_name
     # return filtered_
     if asset_name:
-        filtered_data = [item for item in data if asset_name.lower() in item['market_and_exchange_names'].lower()]
+        filtered_data = [item for item in data if asset_name == item['market_and_exchange_names']]
     else:
         filtered_data = data
     return filtered_data
@@ -256,7 +257,7 @@ indices = ["DOW JONES U.S. REAL ESTATE IDX - CHICAGO BOARD OF TRADE", "E-MINI S&
 MyAppToken = os.getenv('SODAPY_TOKEN')
 client = Socrata("publicreporting.cftc.gov", MyAppToken)
 
-# Pull COT data 
+# # Pull COT data 
 cot_data = get_last_two_reports(client)
 st.set_page_config(layout="wide")
 # st.title("CoTrends")
@@ -270,8 +271,8 @@ col1, col2 = st.columns(2)
 with col1:
     st.header("Forex")
     for asset in forex:
-        asset = asset.split(" -")[0]
-        with st.expander(asset):
+        short_asset = asset.split(" -")[0]
+        with st.expander(short_asset):
             asset_data = aggregate_report_data(cot_data, asset)
             analytics_df = analyze_change(asset_data)
             # Prepare data for stacked bar chart
@@ -282,13 +283,13 @@ with col1:
                 st.table(analytics_df[['Traders', 'Net Change %']])
             with _col[1]:
                 # Display the chart
-                st.bar_chart(chart_data)
+                st.bar_chart(chart_data, color=["#ff3131","#38b6ff"])
 
 with col2:
     st.header("Commodities")
     for asset in commodities:
-        asset = asset.split(" -")[0]
-        with st.expander(asset):
+       short_asset = asset.split(" -")[0]
+       with st.expander(short_asset):
             asset_data = aggregate_report_data(cot_data, asset)
             analytics_df = analyze_change(asset_data)
             # Prepare data for stacked bar chart
@@ -299,12 +300,12 @@ with col2:
                 st.table(analytics_df[['Traders', 'Net Change %']])
             with _col[1]:
                 # Display the chart
-                st.bar_chart(chart_data)
+                st.bar_chart(chart_data, color=["#ff3131","#38b6ff"])
 
     st.header("Indices")
     for asset in indices:
-        asset = asset.split(" -")[0]
-        with st.expander(asset):
+        short_asset = asset.split(" -")[0]
+        with st.expander(short_asset):
             asset_data = aggregate_report_data(cot_data, asset)
             analytics_df = analyze_change(asset_data)
             # Prepare data for stacked bar chart
@@ -315,6 +316,11 @@ with col2:
                 st.table(analytics_df[['Traders', 'Net Change %']])
             with _col[1]:
                 # Display the chart
-                st.bar_chart(chart_data)
+                st.bar_chart(chart_data, color=["#ff3131","#38b6ff"])
 
+gold_data = aggregate_report_data(cot_data,"GOLD - COMMODITY EXCHANGE INC.")
+gold_analytics = analyze_change(gold_data)
+# Convert into JSON
+# File name is mydata.json
+gold_analytics.to_json('gold_analytics.json',orient='records', lines=True)
 
