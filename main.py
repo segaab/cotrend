@@ -278,7 +278,7 @@ col1, col2 = st.columns(2)
 
 with col1:
     st.header("Forex")
-    for cot,asset in forex,forex_names:
+    for cot,asset in enumerate(_forex):
         with st.expander(asset):
             asset_data = aggregate_report_data(cot_data, cot)
             analytics_df = analyze_change(asset_data)
