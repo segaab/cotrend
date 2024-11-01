@@ -256,7 +256,7 @@ _forex = {
     'asset_name':["JPY", "AUD","CAD","GBP", "EUR","DXY", "NZD","CHF"]
     }
 
-indicies = ["DOW JONES", "S&P 500", "NQ-100","NIKKEI"]
+indicies = ["DOW JONES U.S. REAL ESTATE IDX - CHICAGO BOARD OF TRADE", "E-MINI S&P 500 - CHICAGO MERCANTILE EXCHANGE", "MICRO E-MINI NASDAQ-100 INDEX - CHICAGO MERCANTILE EXCHANGE", "NIKKEI STOCK AVERAGE YEN DENOM - CHICAGO MERCANTILE EXCHANGE"]
 _indices = {
     'cot_name':["DOW JONES U.S. REAL ESTATE IDX - CHICAGO BOARD OF TRADE", "E-MINI S&P 500 - CHICAGO MERCANTILE EXCHANGE", "MICRO E-MINI NASDAQ-100 INDEX - CHICAGO MERCANTILE EXCHANGE", "NIKKEI STOCK AVERAGE YEN DENOM - CHICAGO MERCANTILE EXCHANGE"],
     'asset_name':["DOW JONES", "S&P 500", "NQ-100","NIKKEI"]
@@ -295,6 +295,7 @@ with col1:
 with col2:
     st.header("Commodities")
     for asset in commodities:
+        asset = asset.split(" -")[0]
         with st.expander(asset):
             asset_data = aggregate_report_data(cot_data, asset)
             analytics_df = analyze_change(asset_data)
@@ -309,6 +310,7 @@ with col2:
 
     st.header("Indices")
     for asset in indicies:
+        asset = asset.split(" -")[0]
         with st.expander(asset):
             asset_data = aggregate_report_data(cot_data, asset)
             analytics_df = analyze_change(asset_data)
