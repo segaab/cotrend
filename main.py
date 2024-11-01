@@ -214,19 +214,24 @@ def analyze_change(aggregated_data):
                 'previous_net_pct': previous_net_pct,
                 'change_in_net_pct': change_in_net_pct
             })
+    df = pd.DataFrame(analysis_results)
+    df_analysis = df.copy()
+    df_analysis.loc[df['group']=="noncomm_positions",'group'] = "Non-Commercial"
+    df_analysis.loc[df['group']=="comm_positions",'group'] = "Commercial"
+    df_analysis.loc[df['group']=="nonrept_positions",'group'] = "Retail"
 
-    return pd.DataFrame(analysis_results)
+    return pd.DataFrame(df_analysis)
 
 def analyze_positions(cot_data):
     # Aggregate long and short positions by trader group
-    commercial_long = cot_data.loc[(cot_data['group'] == 'comm_positions'), 'latest_long_pct'].sum()
-    commercial_short = cot_data.loc[(cot_data['group'] == 'comm_positions'), 'latest_short_pct'].sum()
+    non_commercial_long = cot_data.loc[(cot_data['group'] == 'Non-Commercial'), 'latest_long_pct'].sum()
+    non_commercial_short = cot_data.loc[(cot_data['group'] == 'Non-Commercial'), 'latest_short_pct'].sum()
+       
+    commercial_long = cot_data.loc[(cot_data['group'] == 'Commercial'), 'latest_long_pct'].sum()
+    commercial_short = cot_data.loc[(cot_data['group'] == 'Commercial'), 'latest_short_pct'].sum()
     
-    non_commercial_long = cot_data.loc[(cot_data['group'] == 'noncomm_positions'), 'latest_long_pct'].sum()
-    non_commercial_short = cot_data.loc[(cot_data['group'] == 'noncomm_positions'), 'latest_short_pct'].sum()
-    
-    non_reportable_long = cot_data.loc[(cot_data['group'] == 'nonrept_positions'), 'latest_long_pct'].sum()
-    non_reportable_short = cot_data.loc[(cot_data['group'] == 'nonrept_positions'), 'latest_short_pct'].sum()
+    non_reportable_long = cot_data.loc[(cot_data['group'] == 'Retail'), 'latest_long_pct'].sum()
+    non_reportable_short = cot_data.loc[(cot_data['group'] == 'Retail'), 'latest_short_pct'].sum()
 
     # Format data to match the required output structure
     data = {
@@ -318,9 +323,7 @@ with col2:
                 # Display the chart
                 st.bar_chart(chart_data, color=["#ff3131","#38b6ff"])
 
-gold_data = aggregate_report_data(cot_data,"GOLD - COMMODITY EXCHANGE INC.")
-gold_analytics = analyze_change(gold_data)
-# Convert into JSON
-# File name is mydata.json
-gold_analytics.to_json('gold_analytics.json',orient='records', lines=True)
+# gold_aggregate = aggregate_report_data(cot_data,"GOLD - COMMODITY EXCHANGE INC.")
+# gold_analytics = analyze_change(gold_aggregate)
 
+# gold_analytics.to_json('analyzed_position.json',orient='records', lines=True)
