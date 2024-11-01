@@ -9,6 +9,7 @@ from aggregate_report_data import aggregate_report_data
 # from analyze_position import analyze_positions
 # os.environ[""]
 
+
 def create_normalized_stacked_bar_data(df):
     """
     Creates normalized data for long and short positions for each trader group.
@@ -100,6 +101,10 @@ def asset_name_filter(data, asset_name=None):
     Returns:
     list of dict: Filtered data where 'market_and_exchange_names' contains the asset_name.
     """
+    # if data[data['market_and_exchange_names']]==asset_name:
+    #     filtered_df ={}
+    #     filtered_df['market_and_exchange_names'] = asset_name
+    # return filtered_
     if asset_name:
         filtered_data = [item for item in data if asset_name.lower() in item['market_and_exchange_names'].lower()]
     else:
@@ -224,9 +229,9 @@ def analyze_positions(cot_data):
 
     # Format data to match the required output structure
     data = {
-        'Trader Group': ['Commercial', 'Non-Commercial', 'Non-Reportable'],
-        'Long': [commercial_long, non_commercial_long, non_reportable_long],
-        'Short': [commercial_short, non_commercial_short, non_reportable_short]
+        'Trader Group': ['Non-Commercial','Commercial', 'Retail'],
+        'Long': [ non_commercial_long, commercial_long, non_reportable_long],
+        'Short': [non_commercial_short,  commercial_short, non_reportable_short]
     }
 
     position_df = pd.DataFrame(data)
@@ -244,23 +249,9 @@ def analyze_positions(cot_data):
 
 # Asset list by catagories
 commodities = ["GOLD - COMMODITY EXCHANGE INC.","SILVER - COMMODITY EXCHANGE INC.","WTI FINANCIAL CRUDE OIL - NEW YORK MERCANTILE EXCHANGE"]
-commodities_names = ["Gold","Silver","WTI Crude Oil"]
-_commodities ={
-    'cot_name':["GOLD - COMMODITY EXCHANGE INC.","SILVER - COMMODITY EXCHANGE INC.","WTI FINANCIAL CRUDE OIL - NEW YORK MERCANTILE EXCHANGE"],
-    'asset_name':["Gold","Silver","WTI Crude Oil"]
-    }
 forex = ["JAPANESE YEN - CHICAGO MERCANTILE EXCHANGE", "AUSTRALIAN DOLLAR - CHICAGO MERCANTILE EXCHANGE","CANADIAN DOLLAR - CHICAGO MERCANTILE EXCHANGE","BRITISH POUND - CHICAGO MERCANTILE EXCHANGE", "EURO FX - CHICAGO MERCANTILE EXCHANGE","USD INDEX - ICE FUTURES U.S.", "NZ DOLLAR - CHICAGO MERCANTILE EXCHANGE","SWISS FRANC - CHICAGO MERCANTILE EXCHANGE"]
-forex_names = ["JPY", "AUD","CAD","GBP", "EUR","DXY", "NZD","CHF"]
-_forex = {
-    'cot_name':["JAPANESE YEN - CHICAGO MERCANTILE EXCHANGE", "AUSTRALIAN DOLLAR - CHICAGO MERCANTILE EXCHANGE","CANADIAN DOLLAR - CHICAGO MERCANTILE EXCHANGE","BRITISH POUND - CHICAGO MERCANTILE EXCHANGE", "EURO FX - CHICAGO MERCANTILE EXCHANGE","USD INDEX - ICE FUTURES U.S.", "NZ DOLLAR - CHICAGO MERCANTILE EXCHANGE","SWISS FRANC - CHICAGO MERCANTILE EXCHANGE"],
-    'asset_name':["JPY", "AUD","CAD","GBP", "EUR","DXY", "NZD","CHF"]
-    }
+indices = ["DOW JONES U.S. REAL ESTATE IDX - CHICAGO BOARD OF TRADE", "E-MINI S&P 500 - CHICAGO MERCANTILE EXCHANGE", "MICRO E-MINI NASDAQ-100 INDEX - CHICAGO MERCANTILE EXCHANGE", "NIKKEI STOCK AVERAGE YEN DENOM - CHICAGO MERCANTILE EXCHANGE"]
 
-indicies = ["DOW JONES U.S. REAL ESTATE IDX - CHICAGO BOARD OF TRADE", "E-MINI S&P 500 - CHICAGO MERCANTILE EXCHANGE", "MICRO E-MINI NASDAQ-100 INDEX - CHICAGO MERCANTILE EXCHANGE", "NIKKEI STOCK AVERAGE YEN DENOM - CHICAGO MERCANTILE EXCHANGE"]
-_indices = {
-    'cot_name':["DOW JONES U.S. REAL ESTATE IDX - CHICAGO BOARD OF TRADE", "E-MINI S&P 500 - CHICAGO MERCANTILE EXCHANGE", "MICRO E-MINI NASDAQ-100 INDEX - CHICAGO MERCANTILE EXCHANGE", "NIKKEI STOCK AVERAGE YEN DENOM - CHICAGO MERCANTILE EXCHANGE"],
-    'asset_name':["DOW JONES", "S&P 500", "NQ-100","NIKKEI"]
-}
 # Initialize Socrata client (update your credentials securely)
 MyAppToken = os.getenv('SODAPY_TOKEN')
 client = Socrata("publicreporting.cftc.gov", MyAppToken)
@@ -285,9 +276,10 @@ with col1:
             analytics_df = analyze_change(asset_data)
             # Prepare data for stacked bar chart
             chart_data = analyze_positions(analytics_df)
+            analytics_df = analytics_df.rename(columns={'group':'Traders','change_in_net_pct':"Net Change %"})
             _col = st.columns(2)
             with _col[0]:
-                st.table(analytics_df[['group', 'change_in_net_pct']])
+                st.table(analytics_df[['Traders', 'Net Change %']])
             with _col[1]:
                 # Display the chart
                 st.bar_chart(chart_data)
@@ -301,24 +293,26 @@ with col2:
             analytics_df = analyze_change(asset_data)
             # Prepare data for stacked bar chart
             chart_data = analyze_positions(analytics_df)
+            analytics_df = analytics_df.rename(columns={'group':'Traders','change_in_net_pct':"Net Change %"})
             _col = st.columns(2)
             with _col[0]:
-                st.table(analytics_df[['group', 'change_in_net_pct']])
+                st.table(analytics_df[['Traders', 'Net Change %']])
             with _col[1]:
                 # Display the chart
                 st.bar_chart(chart_data)
 
     st.header("Indices")
-    for asset in indicies:
+    for asset in indices:
         asset = asset.split(" -")[0]
         with st.expander(asset):
             asset_data = aggregate_report_data(cot_data, asset)
             analytics_df = analyze_change(asset_data)
             # Prepare data for stacked bar chart
             chart_data = analyze_positions(analytics_df)
+            analytics_df = analytics_df.rename(columns={'group':'Traders','change_in_net_pct':"Net Change %"})
             _col = st.columns(2)
             with _col[0]:
-                st.table(analytics_df[['group', 'change_in_net_pct']])
+                st.table(analytics_df[['Traders', 'Net Change %']])
             with _col[1]:
                 # Display the chart
                 st.bar_chart(chart_data)
