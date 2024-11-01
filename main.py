@@ -278,9 +278,10 @@ col1, col2 = st.columns(2)
 
 with col1:
     st.header("Forex")
-    for cot,asset in enumerate(_forex):
+    for asset in forex:
+        asset = asset.split(" -")[0]
         with st.expander(asset):
-            asset_data = aggregate_report_data(cot_data, cot)
+            asset_data = aggregate_report_data(cot_data, asset)
             analytics_df = analyze_change(asset_data)
             # Prepare data for stacked bar chart
             chart_data = analyze_positions(analytics_df)
