@@ -1,4 +1,5 @@
 import pandas as pd
+from data_fetcher import filter_results
 
 def aggregate_report_data(data, asset_name=None):
     """
